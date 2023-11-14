@@ -418,7 +418,7 @@ const reset = () => {
             appearance: none;
 
             border-radius: 20px;
-            background: #ff8cff;
+            background-color: #ff8cff;
 
             cursor: pointer;
 
