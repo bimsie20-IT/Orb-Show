@@ -280,7 +280,7 @@ const reset = () => {
                 id="drop_slider"
                 min="2"
                 max="20"
-                value="10"
+                :value="dropSpatie"
             />
         </div>
 
