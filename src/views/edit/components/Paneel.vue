@@ -275,12 +275,11 @@ const reset = () => {
                 </svg>
             </button>
             <input
-                @input="dropSpatie = $event.target.value"
+                v-model="dropSpatie"
                 type="range"
                 id="drop_slider"
                 min="2"
                 max="20"
-                :value="dropSpatie"
             />
         </div>
 
