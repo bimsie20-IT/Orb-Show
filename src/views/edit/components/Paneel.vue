@@ -398,9 +398,10 @@ const reset = () => {
             background-color: greenyellow;
         }
         #drop_slider {
-            -webkit-appearance: none;
-            appearance: none;
             height: 3vh;
+
+            appearance: none;
+
             border-radius: 20px;
             background: linear-gradient(
                 to bottom right,
@@ -408,27 +409,24 @@ const reset = () => {
               #628580
             );
             outline: none;
-            opacity: 0.7;
-            -webkit-transition: .2s;
-            transition: opacity .2s;
-        }
-
-        #drop_slider:hover {
-            opacity: 1;
         }
 
         #drop_slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 4vh;
             height: 4vh;
+            width: 4vh;
+
+            appearance: none;
+
             border-radius: 20px;
-            background: linear-gradient(
-                to top right,
-              rgb(28, 206, 197),
-              rgb(209, 96, 21)
-            );
+            background: #ff8cff;
+
             cursor: pointer;
+
+            transition: background-color .5s;
+        }
+
+        #drop_slider::-webkit-slider-thumb:hover {
+            background-color: #b922ff;
         }
     }
 
