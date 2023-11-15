@@ -356,18 +356,20 @@ const reset = () => {
                     </div>
                 </div>
 
-                <table
-                    v-if="effectForumDetails.effectType == 'cloth_shift'"
-                    id="achterdoek_checker"
-                    class="d-flex flex-column"
-                >
-                    <tr v-for="y in 10" class="d-flex justify-content-between">
-                        <div v-for="x in 10" id="achterdoek_checker_wrapper">
-                            <input type="checkbox" id="achterdoek_checker_input" :name="'cloth-' + y + x" />
-                            <span id="checkmark"></span>
+                <div class="mb-4">
+                    <label class="form-label">Lights:</label>
+                    <div
+                        v-if="effectForumDetails.effectType == 'cloth_shift'"
+                        id="achterdoek_checker"
+                    >
+                        <div
+                            v-for="x in 60"
+                            class="achterdoek_checker_checkbox"
+                        >
+                            <input type="checkbox" />
                         </div>
-                    </tr>
-                </table>
+                    </div>
+                </div>
 
                 <div class="mb-2">
                     <label class="form-label">Duration:</label>
@@ -505,16 +507,40 @@ const reset = () => {
             #116c72
         );
 
-        #achterdoek_checker_wrapper {
-            flex-grow: 1;
-            background-color: #116c72;
-        }
-        #achterdoek_checker_input {
-        }
-        #checkmark {
-            height: 50%;
-            width: 50%;
-            background-color: yellow;
+        form {
+            display: flex;
+            align-items: center;
+
+            #achterdoek_checker {
+                display: grid;
+                grid-template-rows: repeat(6, 1fr);
+                grid-template-columns: repeat(10, 1fr);
+                height: 25vh;
+                width: 40vh;
+
+                .achterdoek_checker_checkbox {
+                    border: 1px dotted white;
+
+                    input {
+                        appearance: none;
+
+                        height: 100%;
+                        width: 100%;
+
+                        background-color: black;
+
+                        cursor: pointer;
+                    }
+
+                    input:checked {
+                        background-color: yellow;
+                    }
+                }
+            }
+
+            input[type="number"], input[type="color"], button[type="submit"] {
+                width: 50vh;
+            }
         }
     }
 }

@@ -108,8 +108,8 @@ const props = defineProps(['podium'])
         grid-area: ac_do;
 
         display: grid;
-        grid-template-rows: repeat(1fr, 10);
-        grid-template-columns: repeat(1fr, 10);
+        grid-template-rows: repeat(6, 1fr);
+        grid-template-columns: repeat(10, 1fr);
 
         background-color: yellow;
     }
