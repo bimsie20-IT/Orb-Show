@@ -362,7 +362,10 @@ const reset = () => {
                     class="d-flex flex-column"
                 >
                     <tr v-for="y in 10" class="d-flex justify-content-between">
-                        <input v-for="x in 10" type="checkbox" :name="'cloth-' + y + x" />
+                        <div v-for="x in 10" id="achterdoek_checker_wrapper">
+                            <input type="checkbox" id="achterdoek_checker_input" :name="'cloth-' + y + x" />
+                            <span id="checkmark"></span>
+                        </div>
                     </tr>
                 </table>
 
@@ -501,6 +504,18 @@ const reset = () => {
             #28b8c2,
             #116c72
         );
+
+        #achterdoek_checker_wrapper {
+            flex-grow: 1;
+            background-color: #116c72;
+        }
+        #achterdoek_checker_input {
+        }
+        #checkmark {
+            height: 50%;
+            width: 50%;
+            background-color: yellow;
+        }
     }
 }
 
