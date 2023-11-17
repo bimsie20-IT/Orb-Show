@@ -53,6 +53,13 @@ onMounted(() => {
                             spots: parameters.getElementsByTagName('spots')[0].childNodes[0].nodeValue.split(',')
                         }
                         break
+                    case 'cloth_shift':
+                        effectParameters = {
+                            duration: parameters.getElementsByTagName('duration')[0].childNodes[0].nodeValue,
+                            color: parameters.getElementsByTagName('color')[0].childNodes[0].nodeValue,
+                            panelen: parameters.getElementsByTagName('panelen')[0].childNodes[0].nodeValue.split(',')
+                        }
+                        break
                 }
                 effectDrops.value[key].effecten.push({
                     effectType: effectType,
@@ -63,6 +70,8 @@ onMounted(() => {
 
         key++
     }
+    console.log('+++')
+    console.log(effectDrops.value)
 })
 
 /* effectendoos */
@@ -170,6 +179,8 @@ const submitEffect = () => {
         effectType: effectForumDetails.value.effectType,
         params: effectParameters
     })
+    console.log('+++')
+    console.log(effectDrops.value)
 
     // Er zijn wijzigingen geweest
     wijzigingenOpgeslagen.value = false
