@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import _ from 'lodash'
 import chroma from 'chroma-js'
 import Podium from './components/Podium.vue'
 import Paneel from './components/Paneel.vue'
@@ -64,29 +65,20 @@ const saveBestand = async (effecten) => {
 
 /* Reactive element voor het podium */
 
-// Hoe het podium eruit ziet wanneer de main loop niet draait
+// De initiele objecten van het podium definieren
 const podiumStart = {
-    plafondLampKleuren: [ '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff' ],
-    achterdoekKleuren: [
-        '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000',
-        '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000',
-        '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000',
-        '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000',
-        '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000',
-        '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000'
-    ]
+    plafondLampKleuren: Array.from({ length: 6 }, () => '#ffffff'),
+    achterdoekKleuren: Array.from({ length: 60 }, () => '#000000')
 }
 
-const podium = ref(podiumStart)
+const podium = ref(_.cloneDeep(podiumStart))
 
 const resetPodium = () => {
     animatieFrames.forEach(frame => {
         cancelAnimationFrame(frame)
     })
     animatieFrames = []
-    podium.value.plafondLampKleuren.forEach((kleur, index) => {
-        podium.value.plafondLampKleuren[index] = '#ffffff'
-    })
+    podium.value = _.cloneDeep(podiumStart)
 }
 
 /* ******************************** */
@@ -97,7 +89,10 @@ const resetPodium = () => {
 const checkEffect = (effect) => {
     switch (effect.effectType) {
         case 'color_shift':
-            colorShiftEffect(effect.params.color, effect.params.duration, effect.params.spots)
+            colorShiftEffect(effect.params.color, effect.params.duration, effect.params.spots, podium.value.plafondLampKleuren)
+            break
+        case 'cloth_shift':
+            colorShiftEffect(effect.params.color, effect.params.duration, effect.params.panelen, podium.value.achterdoekKleuren)
             break
     }
 }
@@ -109,31 +104,27 @@ zodat we ze later kunnen annuleren als de gebruiker op stop drukt
 let animatieFrames = []
 
 // Deze functie fade een naar een bepaalde kleur vanaf een gegeven startkleur
-const colorShiftEffect = (eindKleur, duur, spots) => {
+const colorShiftEffect = (eindKleur, duur, spots, podiumKleuren) => {
     spots.forEach((spot, index) => {
         if (spot) {
-            const startKleur = podium.value.plafondLampKleuren[index]
+            const startKleur = podiumKleuren[index]
 
             // Voor elke seconden zijn 60 frames nodig voor vloeiende bewegingen
             const aantalStappen = duur * props.refreshRate
 
             const kleuren = chroma.scale([startKleur, eindKleur]).colors(aantalStappen);
 
-            // Functie om de huidige kleur op te halen op basis van de frame-index
-            const getHuidigeKleur = (frame) => {
-                const kleurIndex = Math.floor(frame % aantalStappen);
-                return kleuren[kleurIndex];
-            }
-
             // Simuleer een loop waarin de kleurovergang wordt geanimeerd
             const animatieLoop = () => {
                 let frame = 0
 
                 const updateFrame = () => {
-                    const huidigeKleur = getHuidigeKleur(frame)
+                    // De huidige kleur ophalen op basis van de frame-index
+                    const kleurIndex = Math.floor(frame % aantalStappen);
+                    const huidigeKleur = kleuren[kleurIndex]
 
                     // De GUI updaten
-                    podium.value.plafondLampKleuren[index] = huidigeKleur
+                    podiumKleuren[index] = huidigeKleur
 
                     frame++
                     if (frame < aantalStappen) {
@@ -158,9 +149,10 @@ const colorShiftEffect = (eindKleur, duur, spots) => {
     <div id="wrapper">
         <Podium :podium="podium" class="shadow" />
         <Paneel
+            :podium="podium"
             :effectenLijst="effectenLijst"
-            @effect-requested="checkEffect($event)"
-            @effects-saved="saveBestand($event)"
+            @effect-requested="checkEffect"
+            @effects-saved="saveBestand"
             @reset-requested="resetPodium"
         />
     </div>

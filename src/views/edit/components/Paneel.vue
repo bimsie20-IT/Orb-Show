@@ -10,7 +10,7 @@ En we moeten ook kunnen opslaan voordat we afsluiten
 const emit = defineEmits(['effect-requested', 'effects-saved', 'reset-requested'])
 
 // Het deel van het XML bestand dat de lijst met effecten bevat
-const props = defineProps(['effectenLijst'])
+const props = defineProps(['effectenLijst', 'podium'])
 
 // De tijdlijn waarvoor elke seconde effecten kan bevatten
 const effectDrops = ref([])
@@ -48,7 +48,6 @@ onMounted(() => {
                 switch (effectType) {
                     case 'color_shift':
                         effectParameters = {
-                            lampId: parameters.getElementsByTagName('lampId')[0].childNodes[0].nodeValue,
                             duration: parameters.getElementsByTagName('duration')[0].childNodes[0].nodeValue,
                             color: parameters.getElementsByTagName('color')[0].childNodes[0].nodeValue,
                             spots: parameters.getElementsByTagName('spots')[0].childNodes[0].nodeValue.split(',')
@@ -147,18 +146,23 @@ const submitEffect = () => {
     switch (effectForumDetails.value.effectType) {
         case 'color_shift':
             effectParameters = {
-                lampId: forumData.get('lampId'),
                 duration: forumData.get('duration'),
                 color: forumData.get('color'),
-                spots: [
-                    forumData.get('spot-1'),
-                    forumData.get('spot-2'),
-                    forumData.get('spot-3'),
-                    forumData.get('spot-4'),
-                    forumData.get('spot-5'),
-                    forumData.get('spot-6')
-                ]
+                spots: []
             }
+            Object.keys(props.podium.plafondLampKleuren).forEach(key => {
+                effectParameters.spots.push(forumData.get('spot-' + key))
+            })
+            break
+        case 'cloth_shift':
+            effectParameters = {
+                duration: forumData.get('duration'),
+                color: forumData.get('color'),
+                panelen: []
+            }
+            Object.keys(props.podium.achterdoekKleuren).forEach(key => {
+                effectParameters.panelen.push(forumData.get('achterdoek_paneel-' + key))
+            })
             break
     }
 
@@ -209,6 +213,7 @@ const run = () => {
         effectDrops.value[seconde.value].effecten.forEach(effect => {
             // Emit een verzoek om het effect uit te voeren
             emit('effect-requested', effect)
+            console.log(effect.params)
         })
 
         seconde.value++
@@ -300,8 +305,8 @@ const reset = () => {
                             : 'rgba(0, 0, 0, 0)'
                     }"
                     @drop="dropEffect"
-                    @dragover="animateDragOver($event)"
-                    @dragleave="animateDragLeave($event)"
+                    @dragover="animateDragOver"
+                    @dragleave="animateDragLeave"
                     @dragover.prevent
                     @dragenter.prevent
                 ></div>
@@ -329,44 +334,27 @@ const reset = () => {
                 <div class="mb-2">
                     <label v-if="effectForumDetails.effectType == 'color_shift'" class="form-label">Spots:</label>
                     <div v-if="effectForumDetails.effectType == 'color_shift'" class="lamp_checker d-flex justify-content-between">
-                        <div class="form-check mr-2">
-                            <input type="checkbox" class="form-check-input" name="spot-1" />
-                            <label class="form-check-label">1</label>
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" name="spot-2" />
-                            <label class="form-check-label">2</label>
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" name="spot-3" />
-                            <label class="form-check-label">3</label>
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" name="spot-4" />
-                            <label class="form-check-label">4</label>
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" name="spot-5" />
-                            <label class="form-check-label">5</label>
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" name="spot-6" />
-                            <label class="form-check-label">6</label>
+                        <div
+                            v-for="(x, index) in props.podium.plafondLampKleuren"
+                            class="form-check"
+                        >
+                            <input type="checkbox" class="form-check-input" :name="'spot-' + index" />
+                            <label class="form-check-label">{{ index + 1 }}</label>
                         </div>
                     </div>
                 </div>
 
-                <div class="mb-4">
+                <div
+                    v-if="effectForumDetails.effectType == 'cloth_shift'"
+                    class="mb-4"
+                >
                     <label class="form-label">Lights:</label>
-                    <div
-                        v-if="effectForumDetails.effectType == 'cloth_shift'"
-                        id="achterdoek_checker"
-                    >
+                    <div id="achterdoek_checker">
                         <div
-                            v-for="x in 60"
+                            v-for="(x, index) in props.podium.achterdoekKleuren"
                             class="achterdoek_checker_checkbox"
                         >
-                            <input type="checkbox" />
+                            <input type="checkbox" :name="'achterdoek_paneel-' + index" />
                         </div>
                     </div>
                 </div>
@@ -376,7 +364,10 @@ const reset = () => {
                     <input type="number" name="duration" value="1" min="1" max="10" class="form-control form-control-sm" />
                 </div>
 
-                <div v-if="effectForumDetails.effectType == 'color_shift'" class="mb-2">
+                <div
+                    v-if="effectForumDetails.effectType == 'color_shift' || effectForumDetails.effectType == 'cloth_shift'"
+                    class="mb-2"
+                >
                     <label class="form-label">Color:</label>
                     <input type="color" name="color" class="form-control form-control-color" />
                 </div>
