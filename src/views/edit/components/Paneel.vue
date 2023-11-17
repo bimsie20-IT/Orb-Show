@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import bootstrapIcons from 'bootstrap-icons/bootstrap-icons.svg'
 
 /*
@@ -11,6 +11,14 @@ const emit = defineEmits(['effect-requested', 'effects-saved', 'reset-requested'
 
 // Het deel van het XML bestand dat de lijst met effecten bevat
 const props = defineProps(['effectenLijst', 'podium'])
+
+// De hoeveelheid van elk soort objecten meten
+const aantalSpots = computed(() => {
+    return props.podium.plafondLampKleuren.length
+})
+const aantalPanelen = computed(() => {
+    return props.podium.achterdoekKleuren.length
+})
 
 // De tijdlijn waarvoor elke seconde effecten kan bevatten
 const effectDrops = ref([])
@@ -70,8 +78,6 @@ onMounted(() => {
 
         key++
     }
-    console.log('+++')
-    console.log(effectDrops.value)
 })
 
 /* effectendoos */
@@ -179,8 +185,6 @@ const submitEffect = () => {
         effectType: effectForumDetails.value.effectType,
         params: effectParameters
     })
-    console.log('+++')
-    console.log(effectDrops.value)
 
     // Er zijn wijzigingen geweest
     wijzigingenOpgeslagen.value = false
@@ -346,11 +350,11 @@ const reset = () => {
                     <label v-if="effectForumDetails.effectType == 'color_shift'" class="form-label">Spots:</label>
                     <div v-if="effectForumDetails.effectType == 'color_shift'" class="lamp_checker d-flex justify-content-between">
                         <div
-                            v-for="(x, index) in props.podium.plafondLampKleuren"
+                            v-for="index in aantalSpots"
                             class="form-check"
                         >
-                            <input type="checkbox" class="form-check-input" :name="'spot-' + index" />
-                            <label class="form-check-label">{{ index + 1 }}</label>
+                            <input type="checkbox" class="form-check-input" :name="'spot-' + (index - 1)" />
+                            <label class="form-check-label">{{ index }}</label>
                         </div>
                     </div>
                 </div>
@@ -362,10 +366,10 @@ const reset = () => {
                     <label class="form-label">Lights:</label>
                     <div id="achterdoek_checker">
                         <div
-                            v-for="(x, index) in props.podium.achterdoekKleuren"
+                            v-for="index in aantalPanelen"
                             class="achterdoek_checker_checkbox"
                         >
-                            <input type="checkbox" :name="'achterdoek_paneel-' + index" />
+                            <input type="checkbox" :name="'achterdoek_paneel-' + (index - 1)" />
                         </div>
                     </div>
                 </div>
