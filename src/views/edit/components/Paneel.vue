@@ -13,12 +13,8 @@ const emit = defineEmits(['effect-requested', 'effects-saved', 'reset-requested'
 const props = defineProps(['effectenLijst', 'podium'])
 
 // De hoeveelheid van elk soort objecten meten
-const aantalSpots = computed(() => {
-    return props.podium.plafondLampKleuren.length
-})
-const aantalPanelen = computed(() => {
-    return props.podium.achterdoekKleuren.length
-})
+const aantalSpots = props.podium.plafondLampKleuren.length
+const aantalPanelen = props.podium.achterdoekKleuren.length
 
 // De tijdlijn waarvoor elke seconde effecten kan bevatten
 const effectDrops = ref([])
