@@ -88,7 +88,7 @@ const resetPodium = () => {
 // Deze functie controleert welk effect er moet uitgevoerd worden
 const checkEffect = (effect) => {
     switch (effect.effectType) {
-        case 'color_shift':
+        case 'spot_shift':
             colorShiftEffect(effect.params.color, effect.params.duration, effect.params.spots, podium.value.plafondLampKleuren)
             break
         case 'cloth_shift':

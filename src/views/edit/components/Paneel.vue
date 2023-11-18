@@ -50,7 +50,7 @@ onMounted(() => {
 
                 // Voor elke effect zijn andere parameters nodig
                 switch (effectType) {
-                    case 'color_shift':
+                    case 'spot_shift':
                         effectParameters = {
                             duration: parameters.getElementsByTagName('duration')[0].childNodes[0].nodeValue,
                             color: parameters.getElementsByTagName('color')[0].childNodes[0].nodeValue,
@@ -81,11 +81,7 @@ onMounted(() => {
 // De effecten in de effectendoos met hun eigenschappen + design
 const effectenDoos = [
     {
-        type: 'flash',
-        icon: 'lightbulb-fill'
-    },
-    {
-        type: 'color_shift',
+        type: 'spot_shift',
         icon: 'palette-fill'
     },
     {
@@ -155,7 +151,7 @@ const submitEffect = () => {
 
     // Voor elke effect zijn andere parameters nodig
     switch (effectForumDetails.value.effectType) {
-        case 'color_shift':
+        case 'spot_shift':
             effectParameters = {
                 duration: forumData.get('duration'),
                 color: forumData.get('color'),
@@ -343,8 +339,8 @@ const reset = () => {
         <dialog class="rounded shadow" id="effect_form">
             <form @submit.prevent class="d-flex flex-column">
                 <div class="mb-2">
-                    <label v-if="effectForumDetails.effectType == 'color_shift'" class="form-label">Spots:</label>
-                    <div v-if="effectForumDetails.effectType == 'color_shift'" class="lamp_checker d-flex justify-content-between">
+                    <label v-if="effectForumDetails.effectType == 'spot_shift'" class="form-label">Spots:</label>
+                    <div v-if="effectForumDetails.effectType == 'spot_shift'" class="lamp_checker d-flex justify-content-between">
                         <div
                             v-for="index in aantalSpots"
                             class="form-check"
@@ -376,7 +372,7 @@ const reset = () => {
                 </div>
 
                 <div
-                    v-if="effectForumDetails.effectType == 'color_shift' || effectForumDetails.effectType == 'cloth_shift'"
+                    v-if="effectForumDetails.effectType == 'spot_shift' || effectForumDetails.effectType == 'cloth_shift'"
                     class="mb-2"
                 >
                     <label class="form-label">Color:</label>
@@ -403,6 +399,7 @@ const reset = () => {
         #toggle {
             background-color: greenyellow;
         }
+
         #drop_slider {
             height: 3vh;
 
@@ -416,7 +413,6 @@ const reset = () => {
             );
             outline: none;
         }
-
         #drop_slider::-webkit-slider-thumb {
             height: 4vh;
             width: 4vh;
