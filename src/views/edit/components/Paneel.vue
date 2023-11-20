@@ -64,6 +64,14 @@ onMounted(() => {
                             panelen: parameters.getElementsByTagName('panelen')[0].childNodes[0].nodeValue.split(',')
                         }
                         break
+                    case 'cloth_full_shift':
+                        effectParameters = {
+                            duration: parameters.getElementsByTagName('duration')[0].childNodes[0].nodeValue,
+                            color: parameters.getElementsByTagName('color')[0].childNodes[0].nodeValue,
+                            backColor: parameters.getElementsByTagName('back_color')[0].childNodes[0].nodeValue,
+                            panelen: parameters.getElementsByTagName('panelen')[0].childNodes[0].nodeValue.split(',')
+                        }
+                        break
                 }
                 effectDrops.value[key].effecten.push({
                     effectType: effectType,
@@ -87,6 +95,10 @@ const effectenDoos = [
     {
         type: 'cloth_shift',
         icon: 'border'
+    },
+    {
+        type: 'cloth_full_shift',
+        icon: 'border-all'
     }
 ]
 
@@ -165,6 +177,17 @@ const submitEffect = () => {
             effectParameters = {
                 duration: forumData.get('duration'),
                 color: forumData.get('color'),
+                panelen: []
+            }
+            Object.keys(props.podium.achterdoekKleuren).forEach(key => {
+                effectParameters.panelen.push(forumData.get('achterdoek_paneel-' + key))
+            })
+            break
+        case 'cloth_full_shift':
+            effectParameters = {
+                duration: forumData.get('duration'),
+                color: forumData.get('color'),
+                backColor: forumData.get('back_color'),
                 panelen: []
             }
             Object.keys(props.podium.achterdoekKleuren).forEach(key => {
@@ -352,7 +375,7 @@ const reset = () => {
                 </div>
 
                 <div
-                    v-if="effectForumDetails.effectType == 'cloth_shift'"
+                    v-if="effectForumDetails.effectType == 'cloth_shift' || effectForumDetails.effectType == 'cloth_full_shift'"
                     class="mb-4"
                 >
                     <label class="form-label">Lights:</label>
@@ -371,12 +394,17 @@ const reset = () => {
                     <input type="number" name="duration" value="1" min="1" max="10" class="form-control form-control-sm" />
                 </div>
 
-                <div
-                    v-if="effectForumDetails.effectType == 'spot_shift' || effectForumDetails.effectType == 'cloth_shift'"
-                    class="mb-2"
-                >
+                <div class="mb-2">
                     <label class="form-label">Color:</label>
                     <input type="color" name="color" class="form-control form-control-color" />
+                </div>
+
+                <div
+                    class="mb-2"
+                    v-if="effectForumDetails.effectType == 'cloth_full_shift'"
+                >
+                    <label class="form-label">Back color:</label>
+                    <input type="color" name="back_color" class="form-control form-control-color" />
                 </div>
 
                 <button @click="submitEffect" type="submit" class="btn btn-primary">Submit</button>

@@ -94,6 +94,9 @@ const checkEffect = (effect) => {
         case 'cloth_shift':
             colorShiftEffect(effect.params.color, effect.params.duration, effect.params.panelen, podium.value.achterdoekKleuren)
             break
+        case 'cloth_full_shift':
+            clothFullShiftEffect(effect.params.color, effect.params.backColor, effect.params.duration, effect.params.panelen, podium.value.achterdoekKleuren)
+            break
     }
 }
 
@@ -103,10 +106,10 @@ zodat we ze later kunnen annuleren als de gebruiker op stop drukt
 */
 let animatieFrames = []
 
-// Deze functie fade een naar een bepaalde kleur vanaf een gegeven startkleur
-const colorShiftEffect = (eindKleur, duur, spots, podiumKleuren) => {
-    spots.forEach((spot, index) => {
-        if (spot) {
+// Deze functie fade naar een bepaalde kleur vanaf een gegeven startkleur
+const colorShiftEffect = (eindKleur, duur, spotsOfPanelen, podiumKleuren) => {
+    spotsOfPanelen.forEach((spotOfPaneel, index) => {
+        if (spotOfPaneel) {
             const startKleur = podiumKleuren[index]
 
             // Voor elke seconden zijn 60 frames nodig voor vloeiende bewegingen
@@ -139,6 +142,48 @@ const colorShiftEffect = (eindKleur, duur, spots, podiumKleuren) => {
             // Start de kleurovergangsanimatie
             animatieLoop();
         }
+    })
+}
+
+// Deze functie fade naar een bepaalde kleur vanaf een gegeven startkleur, en backkleur
+const clothFullShiftEffect = (eindKleur, eindBackKleur, duur, panelen, podiumKleuren) => {
+    console.log(eindKleur)
+    console.log(eindBackKleur)
+    console.log(duur)
+    console.log(panelen)
+    console.log(podiumKleuren)
+    panelen.forEach((paneel, index) => {
+        const startKleur = podiumKleuren[index]
+
+        // Voor elke seconden zijn 60 frames nodig voor vloeiende bewegingen
+        const aantalStappen = duur * props.refreshRate
+
+        const kleuren = chroma.scale([startKleur, paneel ? eindKleur : eindBackKleur]).colors(aantalStappen);
+
+        // Simuleer een loop waarin de kleurovergang wordt geanimeerd
+        const animatieLoop = () => {
+            let frame = 0
+
+            const updateFrame = () => {
+                // De huidige kleur ophalen op basis van de frame-index
+                const kleurIndex = Math.floor(frame % aantalStappen);
+                const huidigeKleur = kleuren[kleurIndex]
+
+                // De GUI updaten
+                podiumKleuren[index] = huidigeKleur
+
+                frame++
+                if (frame < aantalStappen) {
+                    // De volgende stap 1/60 seconde later laten uitvoeren
+                    animatieFrames.push(requestAnimationFrame(updateFrame))
+                }
+            }
+
+            updateFrame()
+        }
+
+        // Start de kleurovergangsanimatie
+        animatieLoop();
     })
 }
 
