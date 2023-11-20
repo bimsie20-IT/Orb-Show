@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref } from 'vue'
 import bootstrapIcons from 'bootstrap-icons/bootstrap-icons.svg'
 
 /*
@@ -68,7 +68,7 @@ onMounted(() => {
                         effectParameters = {
                             duration: parameters.getElementsByTagName('duration')[0].childNodes[0].nodeValue,
                             color: parameters.getElementsByTagName('color')[0].childNodes[0].nodeValue,
-                            backColor: parameters.getElementsByTagName('back_color')[0].childNodes[0].nodeValue,
+                            backColor: parameters.getElementsByTagName('backColor')[0].childNodes[0].nodeValue,
                             panelen: parameters.getElementsByTagName('panelen')[0].childNodes[0].nodeValue.split(',')
                         }
                         break
