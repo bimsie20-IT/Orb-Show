@@ -60,9 +60,16 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 
+const mapNaamOrbShow = 'Orb Show'
+
 const handleOpenBestand = async () => {
+    const padNaarDocumenten = app.getPath('documents');
+    const standaardPad = path.join(path.dirname(padNaarDocumenten), path.basename(padNaarDocumenten), mapNaamOrbShow);
+    await fs.mkdir(standaardPad, { recursive: true });
+
     // De gebruiker een bestand vragen, en daarna het gekozen pad onthouden
     const padNaarBestand = (await dialog.showOpenDialog({
+        defaultPath: standaardPad,
         properties: ['openFile'],
         filters: [
             { name: 'OBSW file', extensions: ['obsw'] }
@@ -82,23 +89,40 @@ const handleOpenBestand = async () => {
 };
 
 const handleNieuwBestand = async () => {
+    const padNaarDocumenten = app.getPath('documents');
+    const standaardPad = path.join(path.dirname(padNaarDocumenten), path.basename(padNaarDocumenten), mapNaamOrbShow);
+    await fs.mkdir(standaardPad, { recursive: true });
+
     // De gebruiker het pad vragen, en daarna het pad updaten
     const padNaarBestand = (await dialog.showSaveDialog({
+        defaultPath: standaardPad,
         properties: ['createDirectory'],
         filters: [
             { name: 'OBSW file', extensions: ['obsw'] }
         ]
     })).filePath;
 
+    /*
+        Een map maken om het OBSW bestand in te bewaren,
+        zodat alle andere nodige bestanden zoals: "audio" meegenomen worden
+    */
+    const project = path.parse(padNaarBestand)
+    const projectNaam = project.name;
+    const projectDirectory = project.dir
+    const padNaarProject = path.join(path.dirname(projectDirectory), path.basename(projectDirectory), projectNaam);
+    const padNaarBestandInProject = path.join(path.dirname(padNaarBestand), projectNaam, path.basename(padNaarBestand));
+    await fs.mkdir(padNaarProject, { recursive: true });
+
     // het bestand aanmaken, en op de juiste plek zetten
     const standaardFormaat = '<?xml version="1.0" encoding="UTF-8"?><orbShow><stage><effects></effects></stage></orbShow>';
     try {
         // Het bestand aanmaken, en de standaard voor XML toepassen
-        await fs.writeFile(padNaarBestand, standaardFormaat);
+        await fs.writeFile(padNaarBestandInProject, standaardFormaat);
 
-        return [ 'success', standaardFormaat, padNaarBestand ];
+        return [ 'success', standaardFormaat, padNaarBestandInProject ];
     }
     catch (error) {
+        console.log(error)
         return [ 'error', error, null ];
     }
 };
