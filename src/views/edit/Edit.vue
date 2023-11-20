@@ -147,11 +147,6 @@ const colorShiftEffect = (eindKleur, duur, spotsOfPanelen, podiumKleuren) => {
 
 // Deze functie fade naar een bepaalde kleur vanaf een gegeven startkleur, en backkleur
 const clothFullShiftEffect = (eindKleur, eindBackKleur, duur, panelen, podiumKleuren) => {
-    console.log(eindKleur)
-    console.log(eindBackKleur)
-    console.log(duur)
-    console.log(panelen)
-    console.log(podiumKleuren)
     panelen.forEach((paneel, index) => {
         const startKleur = podiumKleuren[index]
 
