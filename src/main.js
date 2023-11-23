@@ -1,7 +1,9 @@
 const { app, BrowserWindow, ipcMain, dialog, screen } = require('electron');
 const path = require('path');
+const fsSync = require('fs');
 const fs = require('fs/promises');
 const express = require('express');
+const https = require('https');
 
 // De REST API applicatie initialiseren
 const expressApp = express();
@@ -165,5 +167,11 @@ expressApp.get('/api', async (req, res) => {
 
 // De REST API starten
 expressApp.listen(4000)
+
+// De server starten
+https.createServer({
+    key: fsSync.readFileSync('./src/SSL-private_key.pem'),
+    cert: fsSync.readFileSync('./src/SSL-certificate.pem')
+}, expressApp).listen(4785);
 
 /* ******************** */
