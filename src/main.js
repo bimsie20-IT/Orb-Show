@@ -102,7 +102,7 @@ const handleNieuwBestand = async () => {
     await fs.mkdir(standaardPad, { recursive: true });
 
     // De gebruiker het pad vragen, en daarna het pad updaten
-    padNaarBestand = (await dialog.showSaveDialog({
+    const padNaarBestand = (await dialog.showSaveDialog({
         defaultPath: standaardPad,
         properties: ['createDirectory'],
         filters: [
@@ -119,6 +119,7 @@ const handleNieuwBestand = async () => {
     const projectDirectory = project.dir
     const padNaarProject = path.join(path.dirname(projectDirectory), path.basename(projectDirectory), projectNaam);
     const padNaarBestandInProject = path.join(path.dirname(padNaarBestand), projectNaam, path.basename(padNaarBestand));
+    padNaarBestand = padNaarBestandInProject;
     await fs.mkdir(padNaarProject, { recursive: true });
 
     // het bestand aanmaken, en op de juiste plek zetten
