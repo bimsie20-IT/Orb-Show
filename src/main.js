@@ -5,7 +5,7 @@ const express = require('express');
 
 // De REST API applicatie initialiseren
 const expressApp = express();
-expressApp.use(express.static('VR_build'));
+expressApp.use(express.static('./src/VR_build'));
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -102,7 +102,7 @@ const handleNieuwBestand = async () => {
     await fs.mkdir(standaardPad, { recursive: true });
 
     // De gebruiker het pad vragen, en daarna het pad updaten
-    const padNaarBestand = (await dialog.showSaveDialog({
+    const padNaarNieuwBestand = (await dialog.showSaveDialog({
         defaultPath: standaardPad,
         properties: ['createDirectory'],
         filters: [
@@ -114,11 +114,11 @@ const handleNieuwBestand = async () => {
         Een map maken om het OBSW bestand in te bewaren,
         zodat alle andere nodige bestanden zoals: "audio" meegenomen worden
     */
-    const project = path.parse(padNaarBestand)
+    const project = path.parse(padNaarNieuwBestand);
     const projectNaam = project.name;
-    const projectDirectory = project.dir
+    const projectDirectory = project.dir;
     const padNaarProject = path.join(path.dirname(projectDirectory), path.basename(projectDirectory), projectNaam);
-    const padNaarBestandInProject = path.join(path.dirname(padNaarBestand), projectNaam, path.basename(padNaarBestand));
+    const padNaarBestandInProject = path.join(path.dirname(padNaarNieuwBestand), projectNaam, path.basename(padNaarNieuwBestand));
     padNaarBestand = padNaarBestandInProject;
     await fs.mkdir(padNaarProject, { recursive: true });
 
