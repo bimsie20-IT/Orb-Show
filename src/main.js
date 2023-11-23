@@ -1,6 +1,11 @@
 const { app, BrowserWindow, ipcMain, dialog, screen } = require('electron');
 const path = require('path');
 const fs = require('fs/promises');
+const express = require('express');
+
+// De REST API applicatie initialiseren
+const expressApp = express();
+expressApp.use(express.static('VR_build'));
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -63,6 +68,7 @@ app.on('activate', () => {
 // code. You can also put them in separate files and import them here.
 
 const mapNaamOrbShow = 'Orb Show'
+let padNaarBestand = ''
 
 const handleOpenBestand = async () => {
     const padNaarDocumenten = app.getPath('documents');
@@ -70,7 +76,7 @@ const handleOpenBestand = async () => {
     await fs.mkdir(standaardPad, { recursive: true });
 
     // De gebruiker een bestand vragen, en daarna het gekozen pad onthouden
-    const padNaarBestand = (await dialog.showOpenDialog({
+    padNaarBestand = (await dialog.showOpenDialog({
         defaultPath: standaardPad,
         properties: ['openFile'],
         filters: [
@@ -96,7 +102,7 @@ const handleNieuwBestand = async () => {
     await fs.mkdir(standaardPad, { recursive: true });
 
     // De gebruiker het pad vragen, en daarna het pad updaten
-    const padNaarBestand = (await dialog.showSaveDialog({
+    padNaarBestand = (await dialog.showSaveDialog({
         defaultPath: standaardPad,
         properties: ['createDirectory'],
         filters: [
@@ -146,3 +152,17 @@ const handleRefreshRate = () => {
     const refreshRate = scherm.displayFrequency;
     return refreshRate;
 }
+
+/* Orb-VR-Show REST API */
+
+expressApp.get('/api', async (req, res) => {
+    const data = await fs.readFile(padNaarBestand, 'utf8');
+
+    res.header('Content-Type', 'text/xml');
+    res.send(data);
+})
+
+// De REST API starten
+expressApp.listen(4000)
+
+/* ******************** */
