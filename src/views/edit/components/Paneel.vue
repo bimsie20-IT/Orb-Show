@@ -254,6 +254,9 @@ const toggle = () => {
 
     // Het interval starten op basis van de status
     running.value ? runInterval = setInterval(run, 100) : clearInterval(runInterval)
+
+    // De audio regelen
+    running.value ? emit('start-audio') : emit('pauzeer-audio')
 }
 
 // Een functie om de huidige seconde op 0 te zetten
@@ -268,6 +271,9 @@ const reset = () => {
 
     // Het podium resetten zoals het was op het begin
     emit('reset-requested')
+
+    // De audio stopzetten
+    emit('stop-audio')
 }
 
 /* ************ */

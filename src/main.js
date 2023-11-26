@@ -166,7 +166,7 @@ const handleOpenExtraBestand = async (naamBestand) => {
 
     try {
         // Het bestand vervangen, en de inhoud bewerken
-        const data = await fs.readFile(padBestand, 'utf8');
+        const data = await fs.readFile(padBestand);
 
         return [ 'success', data ];
     }

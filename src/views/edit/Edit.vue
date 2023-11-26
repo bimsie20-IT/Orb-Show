@@ -33,14 +33,13 @@ onMounted(async () => {
         // Voor elk type extra bestand geldt een andere uitvoering
         switch (typeBestand) {
             case 'mainAudio':
-            const audioFormaat = naamBestand.split('.')[naamBestand.split('.').length - 1]
-            console.log(typeof data)
-            const blob = new Blob([data[1]], { type: 'audio/wav' });
-            const url = URL.createObjectURL(blob);
-            audioPlayer.src = url
-            console.log(data[1])
-            audioPlayer.play()
-            break
+                // De inhoud van het bestand omcoderen naar audio voor de browser
+                const audio = new Blob([data[1]], { type: 'audio/wav' })
+                const url = URL.createObjectURL(audio)
+
+                // De bron van de audiospeler instellen
+                audioPlayer.src = url
+                break
         }
     })
 })
@@ -224,6 +223,12 @@ const clothFullShiftEffect = (eindKleur, eindBackKleur, duur, panelen, podiumKle
             @effect-requested="checkEffect"
             @effects-saved="saveBestand"
             @reset-requested="resetPodium"
+            @start-audio="audioPlayer.play()"
+            @pauzeer-audio="audioPlayer.pause()"
+            @stop-audio="() => {
+                audioPlayer.pause()
+                audioPlayer.currentTime = 0
+            }"
         />
     </div>
 </template>
