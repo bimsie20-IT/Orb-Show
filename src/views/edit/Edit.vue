@@ -16,10 +16,36 @@ const inhoud = XMLparser.parseFromString(props.inhoud, 'text/xml')
 const orbShow = inhoud.getElementsByTagName('orbShow')[0]
 const stage = orbShow.getElementsByTagName('stage')[0]
 const extraBestanden = orbShow.getElementsByTagName('extraFiles')[0].childNodes
-onMounted(async () => {
-    console.log(await electronAPI.openExtraBestand(extraBestanden[0].attributes.filename.nodeValue))
-})
 const effectenLijst = stage.getElementsByTagName('effects')[0].childNodes
+
+/* De extra bestanden inladen */
+
+const audioPlayer = new Audio()
+
+onMounted(async () => {
+    extraBestanden.forEach(async (bestand) => {
+        const typeBestand = bestand.nodeName
+        const naamBestand = bestand.attributes.filename.nodeValue
+
+        // De inhoud van het bestand opvragen
+        const data = await electronAPI.openExtraBestand(naamBestand)
+
+        // Voor elk type extra bestand geldt een andere uitvoering
+        switch (typeBestand) {
+            case 'mainAudio':
+            const audioFormaat = naamBestand.split('.')[naamBestand.split('.').length - 1]
+            console.log(typeof data)
+            const blob = new Blob([data[1]], { type: 'audio/wav' });
+            const url = URL.createObjectURL(blob);
+            audioPlayer.src = url
+            console.log(data[1])
+            audioPlayer.play()
+            break
+        }
+    })
+})
+
+/* ************************** */
 
 /* Opslaan van het bestand */
 

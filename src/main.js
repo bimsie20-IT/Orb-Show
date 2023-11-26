@@ -132,7 +132,7 @@ const handleNieuwBestand = async () => {
         await fs.mkdir(padNaarProject, { recursive: true });
 
         // het bestand aanmaken, en op de juiste plek zetten
-        const standaardFormaat = '<?xml version="1.0" encoding="UTF-8"?><orbShow><stage><effects></effects></stage></orbShow>';
+        const standaardFormaat = '<?xml version="1.0" encoding="UTF-8"?><orbShow><extraFiles></extraFiles><stage><effects></effects></stage></orbShow>';
         try {
             // Het bestand aanmaken, en de standaard voor XML toepassen
             await fs.writeFile(padNaarBestandInProject, standaardFormaat);
