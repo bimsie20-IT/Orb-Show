@@ -3,11 +3,19 @@ import { ref } from 'vue'
 import bootstrapIcons from 'bootstrap-icons/bootstrap-icons.svg'
 
 /*
-We moeten uiteindelijk met het hoofdcomponent van de view communiceren,
-zodat we de effecten voor het podium kunnen laten uitvoeren
-En we moeten ook kunnen opslaan voordat we afsluiten
+    We moeten uiteindelijk met het hoofdcomponent van de view communiceren,
+    zodat we de effecten voor het podium kunnen laten uitvoeren
+    En we moeten ook kunnen opslaan voordat we afsluiten
+    Hiermee kunnen we ook de audiospeler besturen
 */
-const emit = defineEmits(['effect-requested', 'effects-saved', 'reset-requested'])
+const emit = defineEmits([
+    'effect-requested',
+    'effects-saved',
+    'reset-requested',
+    'start-audio',
+    'pauzeer-audio',
+    'stop-audio'
+])
 
 // Het deel van het XML bestand dat de lijst met effecten bevat
 const props = defineProps(['effectenLijst', 'podium'])
