@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import _ from 'lodash'
 import chroma from 'chroma-js'
 import Podium from './components/Podium.vue'
@@ -7,7 +7,7 @@ import Paneel from './components/Paneel.vue'
 const XMLparser = new DOMParser
 const XMLserializer = new XMLSerializer()
 
-const props = defineProps(['inhoud', 'padNaarBestand', 'refreshRate'])
+const props = defineProps(['inhoud', 'refreshRate'])
 
 // De inhoud van het bestand parsen naar XML
 const inhoud = XMLparser.parseFromString(props.inhoud, 'text/xml')
@@ -15,6 +15,10 @@ const inhoud = XMLparser.parseFromString(props.inhoud, 'text/xml')
 // De XML elementen inlezen en definieren
 const orbShow = inhoud.getElementsByTagName('orbShow')[0]
 const stage = orbShow.getElementsByTagName('stage')[0]
+const extraBestanden = orbShow.getElementsByTagName('extraFiles')[0].childNodes
+onMounted(async () => {
+    console.log(await electronAPI.openExtraBestand(extraBestanden[0].attributes.filename.nodeValue))
+})
 const effectenLijst = stage.getElementsByTagName('effects')[0].childNodes
 
 /* Opslaan van het bestand */
@@ -58,7 +62,7 @@ const saveBestand = async (effecten) => {
     const inhoudString = XMLserializer.serializeToString(inhoud)
 
     // Het bestand opslaan
-    await electronAPI.saveBestand(inhoudString, props.padNaarBestand)
+    await electronAPI.saveBestand(inhoudString)
 }
 
 /* *********************** */

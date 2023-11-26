@@ -45,7 +45,8 @@ app.whenReady().then(() => {
     ipcMain.handle('dialog:openBestand', handleOpenBestand);
     ipcMain.handle('dialog:nieuwBestand', handleNieuwBestand);
     ipcMain.handle('dialog:saveBestand', (event, inhoud, padNaarBestand) => handleSaveBestand(inhoud, padNaarBestand));
-    ipcMain.handle('screen:refreshRate', handleRefreshRate)
+    ipcMain.handle('openExtraBestand', (event, naamBestand) => handleOpenExtraBestand(naamBestand));
+    ipcMain.handle('screen:refreshRate', handleRefreshRate);
     maakWindow();
 });
 
@@ -77,24 +78,29 @@ const handleOpenBestand = async () => {
     const standaardPad = path.join(path.dirname(padNaarDocumenten), path.basename(padNaarDocumenten), mapNaamOrbShow);
     await fs.mkdir(standaardPad, { recursive: true });
 
-    // De gebruiker een bestand vragen, en daarna het gekozen pad onthouden
-    padNaarBestand = (await dialog.showOpenDialog({
-        defaultPath: standaardPad,
-        properties: ['openFile'],
-        filters: [
-            { name: 'OBSW file', extensions: ['obsw'] }
-        ]
-    })).filePaths[0];
-
-    // De inhoud van het bestand ophalen
     try {
-        // Het bestand uitlezen
-        const data = await fs.readFile(padNaarBestand, 'utf8');
+        // De gebruiker een bestand vragen, en daarna het gekozen pad onthouden
+        padNaarBestand = (await dialog.showOpenDialog({
+            defaultPath: standaardPad,
+            properties: ['openFile'],
+            filters: [
+                { name: 'OBSW file', extensions: ['obsw'] }
+            ]
+        })).filePaths[0];
 
-        return [ 'success', data, padNaarBestand ];
+        // De inhoud van het bestand ophalen
+        try {
+            // Het bestand uitlezen
+            const data = await fs.readFile(padNaarBestand, 'utf8');
+
+            return [ 'success', data ];
+        }
+        catch (error) {
+            return [ 'error', error ];
+        }
     }
     catch (error) {
-        return [ 'error', error, null ];
+        console.error(error)
     }
 };
 
@@ -103,52 +109,71 @@ const handleNieuwBestand = async () => {
     const standaardPad = path.join(path.dirname(padNaarDocumenten), path.basename(padNaarDocumenten), mapNaamOrbShow);
     await fs.mkdir(standaardPad, { recursive: true });
 
-    // De gebruiker het pad vragen, en daarna het pad updaten
-    const padNaarNieuwBestand = (await dialog.showSaveDialog({
-        defaultPath: standaardPad,
-        properties: ['createDirectory'],
-        filters: [
-            { name: 'OBSW file', extensions: ['obsw'] }
-        ]
-    })).filePath;
-
-    /*
-        Een map maken om het OBSW bestand in te bewaren,
-        zodat alle andere nodige bestanden zoals: "audio" meegenomen worden
-    */
-    const project = path.parse(padNaarNieuwBestand);
-    const projectNaam = project.name;
-    const projectDirectory = project.dir;
-    const padNaarProject = path.join(path.dirname(projectDirectory), path.basename(projectDirectory), projectNaam);
-    const padNaarBestandInProject = path.join(path.dirname(padNaarNieuwBestand), projectNaam, path.basename(padNaarNieuwBestand));
-    padNaarBestand = padNaarBestandInProject;
-    await fs.mkdir(padNaarProject, { recursive: true });
-
-    // het bestand aanmaken, en op de juiste plek zetten
-    const standaardFormaat = '<?xml version="1.0" encoding="UTF-8"?><orbShow><stage><effects></effects></stage></orbShow>';
     try {
-        // Het bestand aanmaken, en de standaard voor XML toepassen
-        await fs.writeFile(padNaarBestandInProject, standaardFormaat);
+        // De gebruiker het pad vragen, en daarna het pad updaten
+        const padNaarNieuwBestand = (await dialog.showSaveDialog({
+            defaultPath: standaardPad,
+            properties: ['createDirectory'],
+            filters: [
+                { name: 'OBSW file', extensions: ['obsw'] }
+            ]
+        })).filePath;
 
-        return [ 'success', standaardFormaat, padNaarBestandInProject ];
+        /*
+            Een map maken om het OBSW bestand in te bewaren,
+            zodat alle andere nodige bestanden zoals: "audio" meegenomen worden
+        */
+        const project = path.parse(padNaarNieuwBestand);
+        const projectNaam = project.name;
+        const projectDirectory = project.dir;
+        const padNaarProject = path.join(path.dirname(projectDirectory), path.basename(projectDirectory), projectNaam);
+        const padNaarBestandInProject = path.join(path.dirname(padNaarNieuwBestand), projectNaam, path.basename(padNaarNieuwBestand));
+        padNaarBestand = padNaarBestandInProject;
+        await fs.mkdir(padNaarProject, { recursive: true });
+
+        // het bestand aanmaken, en op de juiste plek zetten
+        const standaardFormaat = '<?xml version="1.0" encoding="UTF-8"?><orbShow><stage><effects></effects></stage></orbShow>';
+        try {
+            // Het bestand aanmaken, en de standaard voor XML toepassen
+            await fs.writeFile(padNaarBestandInProject, standaardFormaat);
+
+            return [ 'success', standaardFormaat ];
+        }
+        catch (error) {
+            console.log(error)
+            return [ 'error', error ];
+        }
     }
     catch (error) {
-        console.log(error)
-        return [ 'error', error, null ];
+        console.error(error)
     }
 };
 
-const handleSaveBestand = async (inhoud, padNaarBestand) => {
+const handleSaveBestand = async (inhoud) => {
     try {
         // Het bestand vervangen, en de inhoud bewerken
         await fs.writeFile(padNaarBestand, inhoud);
 
-        return [ 'success', inhoud, padNaarBestand ];
+        return [ 'success', inhoud ];
     }
     catch (error) {
-        return [ 'error', error, null ];
+        return [ 'error', error ];
     }
 };
+
+const handleOpenExtraBestand = async (naamBestand) => {
+    const padBestand = path.join(path.dirname(padNaarBestand), naamBestand);
+
+    try {
+        // Het bestand vervangen, en de inhoud bewerken
+        const data = await fs.readFile(padBestand, 'utf8');
+
+        return [ 'success', data ];
+    }
+    catch (error) {
+        return [ 'error', error ];
+    }
+}
 
 const handleRefreshRate = () => {
     const scherm = screen.getPrimaryDisplay();

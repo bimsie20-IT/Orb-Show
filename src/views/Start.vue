@@ -5,38 +5,40 @@ const emit = defineEmits(['bestand-geopend'])
 
 const nieuwBestand = async () => {
     // Het dialoogvenster openen voor het bestand aan te maken
-    const [ status, inhoud, padNaarBestand ] = await electronAPI.nieuwBestand()
+    const [ status, inhoud ] = await electronAPI.nieuwBestand()
 
     // De verversingsgraad van de gebruikers scherm opvragen
     const refreshRate = await electronAPI.refreshRate()
 
-    // De gebruiker naar de editpagina laten navigeren met de bestandsgegevens als props
-    router.push({
-        name: 'edit',
-        params: {
-            inhoud: inhoud,
-            padNaarBestand: padNaarBestand,
-            refreshRate: refreshRate
-        }
-    })
+    if (status !== 'error') {
+        // De gebruiker naar de editpagina laten navigeren met de bestandsgegevens als props
+        router.push({
+            name: 'edit',
+            params: {
+                inhoud: inhoud,
+                refreshRate: refreshRate
+            }
+        })
+    }
 }
 
 const openBestand = async () => {
     // Het dialoogvenster openen voor het bestand te openen
-    const [ status, inhoud, padNaarBestand ] = await electronAPI.openBestand()
+    const [ status, inhoud ] = await electronAPI.openBestand()
 
     // De verversingsgraad van de gebruikers scherm opvragen
     const refreshRate = await electronAPI.refreshRate()
 
-    // De gebruiker naar de editpagina laten navigeren met de bestandsgegevens als props
-    router.push({
-        name: 'edit',
-        params: {
-            inhoud: inhoud,
-            padNaarBestand: padNaarBestand,
-            refreshRate: refreshRate
-        }
-    })
+    if (status !== 'error') {
+        // De gebruiker naar de editpagina laten navigeren met de bestandsgegevens als props
+        router.push({
+            name: 'edit',
+            params: {
+                inhoud: inhoud,
+                refreshRate: refreshRate
+            }
+        })
+    }
 }
 </script>
 

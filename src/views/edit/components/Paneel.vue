@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import bootstrapIcons from 'bootstrap-icons/bootstrap-icons.svg'
 
 /*
@@ -23,66 +23,64 @@ const effectDrops = ref([])
 const dropSpatie = ref(10) // ...px
 
 // De effectdrops creeren en de al bestaande effecten eraan toevoegen
-onMounted(() => {
-    const aantalEffecten = Object.keys(props.effectenLijst).length
+const aantalEffecten = Object.keys(props.effectenLijst).length
 
-    // Het aantal miliseconden ter beschikking om effecten uit te voeren
-    const aantalSeconden = 3000
+// Het aantal miliseconden ter beschikking om effecten uit te voeren
+const aantalSeconden = 3000
 
-    // Key's worden gebruikt voor prestaties met data binding in lijsten
-    let key = 0
-    // De effectdrops aanmaken
-    while (key<aantalSeconden) {
+// Key's worden gebruikt voor prestaties met data binding in lijsten
+let key = 0
+// De effectdrops aanmaken
+while (key<aantalSeconden) {
 
-        effectDrops.value.push({
-            effecten: [],
-            dropId: key // De key komt overneen met de drop-id
-        })
+    effectDrops.value.push({
+        effecten: [],
+        dropId: key // De key komt overneen met de drop-id
+    })
 
-        // Zoeken naar effecten op dit tijdstip
-        for (let j=0; j<aantalEffecten; j++) {
-            if (props.effectenLijst[j].attributes.dropid.nodeValue == key) {
-                const effectType = props.effectenLijst[j].getElementsByTagName('type')[0].childNodes[0].nodeValue
-                const parameters = props.effectenLijst[j].getElementsByTagName('params')[0]
+    // Zoeken naar effecten op dit tijdstip
+    for (let j=0; j<aantalEffecten; j++) {
+        if (props.effectenLijst[j].attributes.dropid.nodeValue == key) {
+            const effectType = props.effectenLijst[j].getElementsByTagName('type')[0].childNodes[0].nodeValue
+            const parameters = props.effectenLijst[j].getElementsByTagName('params')[0]
 
-                // De parameters voor de functie van het effect te kunnen uitvoeren
-                let effectParameters = {}
+            // De parameters voor de functie van het effect te kunnen uitvoeren
+            let effectParameters = {}
 
-                // Voor elke effect zijn andere parameters nodig
-                switch (effectType) {
-                    case 'spot_shift':
-                        effectParameters = {
-                            duration: parameters.getElementsByTagName('duration')[0].childNodes[0].nodeValue,
-                            color: parameters.getElementsByTagName('color')[0].childNodes[0].nodeValue,
-                            spots: parameters.getElementsByTagName('spots')[0].childNodes[0].nodeValue.split(',')
-                        }
-                        break
-                    case 'cloth_shift':
-                        effectParameters = {
-                            duration: parameters.getElementsByTagName('duration')[0].childNodes[0].nodeValue,
-                            color: parameters.getElementsByTagName('color')[0].childNodes[0].nodeValue,
-                            panelen: parameters.getElementsByTagName('panelen')[0].childNodes[0].nodeValue.split(',')
-                        }
-                        break
-                    case 'cloth_full_shift':
-                        effectParameters = {
-                            duration: parameters.getElementsByTagName('duration')[0].childNodes[0].nodeValue,
-                            color: parameters.getElementsByTagName('color')[0].childNodes[0].nodeValue,
-                            backColor: parameters.getElementsByTagName('backColor')[0].childNodes[0].nodeValue,
-                            panelen: parameters.getElementsByTagName('panelen')[0].childNodes[0].nodeValue.split(',')
-                        }
-                        break
-                }
-                effectDrops.value[key].effecten.push({
-                    effectType: effectType,
-                    params: effectParameters
-                })
+            // Voor elke effect zijn andere parameters nodig
+            switch (effectType) {
+                case 'spot_shift':
+                    effectParameters = {
+                        duration: parameters.getElementsByTagName('duration')[0].childNodes[0].nodeValue,
+                        color: parameters.getElementsByTagName('color')[0].childNodes[0].nodeValue,
+                        spots: parameters.getElementsByTagName('spots')[0].childNodes[0].nodeValue.split(',')
+                    }
+                    break
+                case 'cloth_shift':
+                    effectParameters = {
+                        duration: parameters.getElementsByTagName('duration')[0].childNodes[0].nodeValue,
+                        color: parameters.getElementsByTagName('color')[0].childNodes[0].nodeValue,
+                        panelen: parameters.getElementsByTagName('panelen')[0].childNodes[0].nodeValue.split(',')
+                    }
+                    break
+                case 'cloth_full_shift':
+                    effectParameters = {
+                        duration: parameters.getElementsByTagName('duration')[0].childNodes[0].nodeValue,
+                        color: parameters.getElementsByTagName('color')[0].childNodes[0].nodeValue,
+                        backColor: parameters.getElementsByTagName('backColor')[0].childNodes[0].nodeValue,
+                        panelen: parameters.getElementsByTagName('panelen')[0].childNodes[0].nodeValue.split(',')
+                    }
+                    break
             }
+            effectDrops.value[key].effecten.push({
+                effectType: effectType,
+                params: effectParameters
+            })
         }
-
-        key++
     }
-})
+
+    key++
+}
 
 /* effectendoos */
 

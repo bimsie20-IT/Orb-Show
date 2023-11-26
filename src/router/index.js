@@ -14,7 +14,7 @@ const router = createRouter({
             component: Start
         },
         {
-            path: '/edit/:inhoud/:padNaarBestand/:refreshRate',
+            path: '/edit/:inhoud/:refreshRate',
             name: 'edit',
             component: () => import('../views/edit/Edit.vue'),
             props: true
