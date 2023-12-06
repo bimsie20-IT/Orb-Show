@@ -190,9 +190,6 @@ expressApp.get('/api', async (req, res) => {
     res.send(data);
 })
 
-// De REST API starten
-expressApp.listen(4000)
-
 // De server starten
 https.createServer({
     key: fsSync.readFileSync('./src/SSL-private_key.pem'),
