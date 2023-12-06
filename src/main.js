@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, screen, Menu } = require('electron');
 const path = require('path');
 const fsSync = require('fs');
 const fs = require('fs/promises');
@@ -37,6 +37,24 @@ const maakWindow = () => {
     }
 };
 
+/* Menu */
+
+const template = [
+    {
+        label: 'Project',
+        submenu: [
+            {
+                label: 'Add soundtrack (WAV)',
+                click: async () => {
+                    await addSoundtrack()
+                }
+            }
+        ]
+    }
+]
+
+/* **** */
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -48,6 +66,8 @@ app.whenReady().then(() => {
     ipcMain.handle('openExtraBestand', (event, naamBestand) => handleOpenExtraBestand(naamBestand));
     ipcMain.handle('screen:refreshRate', handleRefreshRate);
     maakWindow();
+    const menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -165,13 +185,38 @@ const handleOpenExtraBestand = async (naamBestand) => {
     const padBestand = path.join(path.dirname(padNaarBestand), naamBestand);
 
     try {
-        // Het bestand vervangen, en de inhoud bewerken
+        // Het bestand uitlezen
         const data = await fs.readFile(padBestand);
 
         return [ 'success', data ];
     }
     catch (error) {
         return [ 'error', error ];
+    }
+}
+
+const addSoundtrack = async () => {
+    const padNaarMuziek = app.getPath('music');
+
+    try {
+        // De gebruiker een bestand vragen, en daarna het gekozen pad onthouden
+        const padBronBestand = (await dialog.showOpenDialog({
+            defaultPath: padNaarMuziek,
+            properties: ['openFile'],
+            filters: [
+                { name: 'WAV file', extensions: ['wav'] }
+            ]
+        })).filePaths[0];
+
+        const padObject = path.parse(padBronBestand);
+        const audioBestandNaam = padObject.base;
+        const padDoelBestand = path.join(path.dirname(padNaarBestand), audioBestandNaam);
+
+        // Het bestand kopieren en plakken in de projectmap
+        fs.copyFile(padBronBestand, padDoelBestand);
+    }
+    catch (error) {
+        console.error(error)
     }
 }
 
