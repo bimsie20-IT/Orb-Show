@@ -18,7 +18,7 @@ electronAPI.onSoundtrackAdded(async (naamBestand) => {
     // De naam van het bestand meegeven in de "filename" attribute
     mainAudioXML.setAttribute('filename', naamBestand)
 
-    // Het element toevoegen las een child element aan het "extraFiles" element
+    // Het element toevoegen als een child element aan het "extraFiles" element
     inhoud.getElementsByTagName('extraFiles')[0].append(mainAudioXML)
 
     // Het XML object serializeren naar een string
@@ -27,8 +27,11 @@ electronAPI.onSoundtrackAdded(async (naamBestand) => {
     // Het bestand opslaan
     await electronAPI.saveBestand(inhoudString)
 
-    // Het audiobestand inladen
-    laadExtraBestanden()
+    // Het besturingssysteem wat tijd geven
+    setTimeout(() => {
+        // Het audiobestand inladen
+        laadExtraBestanden()
+    }, 1000)
 })
 
 /* ********************************** */
