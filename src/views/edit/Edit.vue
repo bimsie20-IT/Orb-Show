@@ -55,6 +55,8 @@ const laadExtraBestanden = () => {
         // Voor elk type extra bestand geldt een andere uitvoering
         switch (typeBestand) {
             case 'mainAudio':
+                console.log(data)
+                console.log(data[1])
                 // De inhoud van het bestand omcoderen naar audio voor de browser
                 const audio = new Blob([data[1]], { type: 'audio/wav' })
                 const url = URL.createObjectURL(audio)

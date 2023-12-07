@@ -237,7 +237,15 @@ expressApp.get('/api', async (req, res) => {
 
     res.header('Content-Type', 'text/xml');
     res.send(data);
-})
+});
+
+expressApp.get('/soundtrack', async (req, res) => {
+    const naamBestand = req.query.naamBestand;
+    const data = await handleOpenExtraBestand(naamBestand);
+
+    res.header('Content-Type', 'application/octet-stream');
+    res.send(data[1]);
+});
 
 // De server starten
 https.createServer({
