@@ -214,7 +214,7 @@ const addSoundtrack = async (mainWindow) => {
         const padDoelBestand = path.join(path.dirname(padNaarBestand), audioBestandNaam);
 
         // Het bestand kopieren en plakken in de projectmap
-        fs.copyFile(padBronBestand, padDoelBestand);
+        await fs.copyFile(padBronBestand, padDoelBestand);
 
         // Het renderer process de naam van het nieuwe audiobestand doorgeven
         mainWindow.webContents.send('soundtrack-added', audioBestandNaam);

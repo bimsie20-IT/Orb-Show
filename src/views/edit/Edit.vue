@@ -27,11 +27,8 @@ electronAPI.onSoundtrackAdded(async (naamBestand) => {
     // Het bestand opslaan
     await electronAPI.saveBestand(inhoudString)
 
-    // Het besturingssysteem wat tijd geven
-    setTimeout(() => {
-        // Het audiobestand inladen
-        laadExtraBestanden()
-    }, 1000)
+    // Het audiobestand inladen
+    laadExtraBestanden()
 })
 
 /* ********************************** */
