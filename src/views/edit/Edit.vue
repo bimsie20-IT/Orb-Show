@@ -9,6 +9,30 @@ const XMLserializer = new XMLSerializer()
 
 const props = defineProps(['inhoud', 'refreshRate'])
 
+/* Luisteren voor events van het menu */
+
+electronAPI.onSoundtrackAdded(async (naamBestand) => {
+    // Het XML element "mainAudio" aanmaken
+    const mainAudioXML = inhoud.createElement('mainAudio')
+
+    // De naam van het bestand meegeven in de "filename" attribute
+    mainAudioXML.setAttribute('filename', naamBestand)
+
+    // Het element toevoegen las een child element aan het "extraFiles" element
+    inhoud.getElementsByTagName('extraFiles')[0].append(mainAudioXML)
+
+    // Het XML object serializeren naar een string
+    const inhoudString = XMLserializer.serializeToString(inhoud)
+
+    // Het bestand opslaan
+    await electronAPI.saveBestand(inhoudString)
+
+    // Het audiobestand inladen
+    laadExtraBestanden()
+})
+
+/* ********************************** */
+
 // De inhoud van het bestand parsen naar XML
 const inhoud = XMLparser.parseFromString(props.inhoud, 'text/xml')
 
@@ -20,9 +44,7 @@ const effectenLijst = stage.getElementsByTagName('effects')[0].childNodes
 
 /* De extra bestanden inladen */
 
-const audioPlayer = new Audio()
-
-onMounted(async () => {
+const laadExtraBestanden = () => {
     extraBestanden.forEach(async (bestand) => {
         const typeBestand = bestand.nodeName
         const naamBestand = bestand.attributes.filename.nodeValue
@@ -42,6 +64,12 @@ onMounted(async () => {
                 break
         }
     })
+}
+
+const audioPlayer = new Audio()
+
+onMounted(() => {
+    laadExtraBestanden()
 })
 
 /* ************************** */

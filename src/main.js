@@ -35,25 +35,28 @@ const maakWindow = () => {
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
         mainWindow.webContents.openDevTools();
     }
-};
 
-/* Menu */
+    /* Menu */
 
-const template = [
-    {
-        label: 'Project',
-        submenu: [
-            {
-                label: 'Add soundtrack (WAV)',
-                click: async () => {
-                    await addSoundtrack()
+    const template = [
+        {
+            label: 'Project',
+            submenu: [
+                {
+                    label: 'Add soundtrack (WAV)',
+                    click: async () => {
+                        await addSoundtrack(mainWindow)
+                    }
                 }
-            }
-        ]
-    }
-]
+            ]
+        }
+    ]
 
-/* **** */
+    const menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
+
+    /* **** */
+};
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -66,8 +69,6 @@ app.whenReady().then(() => {
     ipcMain.handle('openExtraBestand', (event, naamBestand) => handleOpenExtraBestand(naamBestand));
     ipcMain.handle('screen:refreshRate', handleRefreshRate);
     maakWindow();
-    const menu = Menu.buildFromTemplate(template);
-    Menu.setApplicationMenu(menu);
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -195,7 +196,7 @@ const handleOpenExtraBestand = async (naamBestand) => {
     }
 }
 
-const addSoundtrack = async () => {
+const addSoundtrack = async (mainWindow) => {
     const padNaarMuziek = app.getPath('music');
 
     try {
@@ -214,6 +215,9 @@ const addSoundtrack = async () => {
 
         // Het bestand kopieren en plakken in de projectmap
         fs.copyFile(padBronBestand, padDoelBestand);
+
+        // Het renderer process de naam van het nieuwe audiobestand doorgeven
+        mainWindow.webContents.send('soundtrack-added', audioBestandNaam);
     }
     catch (error) {
         console.error(error)
